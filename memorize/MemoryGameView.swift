@@ -10,15 +10,25 @@ import SwiftUI
 struct ContentView: View {
    @ObservedObject var viewModel : MemoryGameViewModel
  
-  
+  private let aspectRatio : CGFloat = 2/3
     
     var body: some View {
-        VStack() {
-            ScrollView {
-                cards.animation(.default, value: viewModel.cards)
-            }
-            Spacer()
-            Button("Shuffle") {
+        
+        VStack(alignment: .center) {
+//            HStack(spacing: 20) {
+//                Text("Important")
+//                Image(systemName: "arrow.up")
+//                Text("Un important")
+//            }.frame(maxWidth: .infinity, alignment: .leading)
+            
+        
+          
+//            ScrollView {
+//                cards.animation(.default, value: viewModel.cards)
+//            }
+            cards.animation(.default, value: viewModel.cards)
+            
+            Button("Shuffles") {
                 viewModel.shuffle()
                 print(viewModel.cards)
             }.foregroundColor(.white).padding(10).background(Color.blue).cornerRadius(10)
@@ -27,26 +37,65 @@ struct ContentView: View {
             
         }.padding()
     }
+    
+    func gridItemWidthThatFits(
+        count: Int,
+        size: CGSize,
+        atAspectRatio aspectRatio: CGFloat
+    ) -> CGFloat {
+        
+        let count = CGFloat(count)
+        var columnCount = 1.0
+        
+        repeat {
+            let width = size.width / columnCount
+            let height = width / aspectRatio
+            
+            let rowCount = (count / columnCount).rounded(.up)
+            
+            if rowCount * height < size.height {
+                return (size.width / columnCount).rounded(.down)
+            }
+            columnCount += 1
+            
+        } while columnCount < count
+        
+        return min(size.width / count, size.height * aspectRatio).rounded(.down)
+    }
    
-    var cards : some View {
-        LazyVGrid(
-            columns: [
-                GridItem(.adaptive(minimum: 85, maximum: 90), spacing: 0
-                )
-                ], spacing:0
-        ) {
-            ForEach(
-                viewModel.cards,
+//    @ViewBuilder
+    private var cards : some View {
+      
+        GeometryReader {
+            geometry in
+            
+            let gridItemWidthFinal = gridItemWidthThatFits(
+                count: viewModel.cards.count,
+                size: geometry.size,
+                atAspectRatio: aspectRatio
+            )
+           
+            
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: gridItemWidthFinal), spacing: 0
+                    )
+                    ], spacing:0
             ) {
-                card in
-                CardView(
-                    card: card
-                ).aspectRatio(2/3, contentMode: .fit).padding(4).onTapGesture {
-                    viewModel.choose(card: card)
+                ForEach(
+                    viewModel.cards,
+                ) {
+                    card in
+                    CardView(
+                        card: card
+                    ).aspectRatio(aspectRatio, contentMode: .fit).padding(4).onTapGesture {
+                        viewModel.choose(card: card)
+                    }
+                    
                 }
-                
             }
         }
+      
 //        LazyVGrid(
 //            columns: [GridItem(), GridItem(), GridItem()]
 //        ) {
@@ -152,7 +201,7 @@ struct CardView : View{
                 
                 baseRect.fill(.brown).opacity(card.isFaceUp ? 0 :1)
             }
-        )
+        ).opacity(card.isFaceUp || !card.isMatched ? 1 : 0)
     }
 }
 
@@ -225,3 +274,50 @@ struct ControllerButton : View {
 //        index in Text("dd")
 //    }
 //}
+
+
+
+///
+///
+//ScrollView {
+//    VStack(alignment: .leading) {
+//        Text("Categories")
+//            .font(.title)
+//
+//        ScrollView(.horizontal){
+//            LazyHStack {
+//                ForEach(["Books", "Shoes", "Toys", "Games", "Phones"], id: \.self) { item in
+//                    Text(item)
+//                        .padding()
+//                        .background(.blue.opacity(0.3))
+//                        .cornerRadius(10)
+//                }
+//            } .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+//        }
+//    }
+//    .padding()
+//}
+
+// ViewThatFits
+//ViewThatFits {
+//    HStack {
+//        Button("Accept") {}
+//        Button("Decline") {}
+//        Button("Decline") {}
+//        Button("Decline") {}
+//    }.font(.largeTitle)
+//
+//    VStack {
+//        Button("Accept") {}
+//        Button("Decline") {}
+//        Button("Decline") {}
+//        Button("Decline") {}
+//    }.font(.largeTitle)
+//}
+//.padding()
+//
+
+
+//
+//        Text("Hello world").padding() .background(Rectangle().foregroundColor(.red))
+//        Circle().foregroundColor(.orange).overlay( Text("Hello again"), alignment: .center)

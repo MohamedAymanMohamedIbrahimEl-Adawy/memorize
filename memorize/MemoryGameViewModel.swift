@@ -23,20 +23,24 @@ class MemoryGameViewModel: ObservableObject {
 //    }
     
         //  Another way of difineing the previous model
-      @Published  private var model = MemorizeGame(
-            numberOfBPairsOFcards: 8
-        ){
-            index in
-            if index < emojis.count
-            {
-                return emojis[index]
-            }else {
-                return "?!"
-            }
-        }
+   private static func createMemoryGame() -> MemorizeGame<String> {
+        MemorizeGame(
+              numberOfBPairsOFcards: 4
+          ){
+              index in
+              if emojis.indices.contains(index) {
+                  return emojis[index]
+              } else {
+                  return "?!"
+              }
+          }
+    }
+
+    @Published  private var model = createMemoryGame()
     
         private static let emojis =  [
-            "🤡", "👺", "👏", "🤠", "😂","👹", "👽","😾", "🥶",
+            "🤡", "👺", "👏", "🤠", "😂","👹", "👽","😾", "🥶", "😤",
+            "🎱", "⚽️", "🎾"
         ]
         
         var cards: Array<MemorizeGame<String>.CardModel>{

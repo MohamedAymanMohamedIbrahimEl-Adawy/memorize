@@ -38,63 +38,34 @@ struct ContentView: View {
         }.padding()
     }
     
-    func gridItemWidthThatFits(
-        count: Int,
-        size: CGSize,
-        atAspectRatio aspectRatio: CGFloat
-    ) -> CGFloat {
-        
-        let count = CGFloat(count)
-        var columnCount = 1.0
-        
-        repeat {
-            let width = size.width / columnCount
-            let height = width / aspectRatio
-            
-            let rowCount = (count / columnCount).rounded(.up)
-            
-            if rowCount * height < size.height {
-                return (size.width / columnCount).rounded(.down)
-            }
-            columnCount += 1
-            
-        } while columnCount < count
-        
-        return min(size.width / count, size.height * aspectRatio).rounded(.down)
-    }
    
 //    @ViewBuilder
     private var cards : some View {
-      
-        GeometryReader {
-            geometry in
-            
-            let gridItemWidthFinal = gridItemWidthThatFits(
-                count: viewModel.cards.count,
-                size: geometry.size,
-                atAspectRatio: aspectRatio
-            )
-           
-            
-            LazyVGrid(
-                columns: [
-                    GridItem(.adaptive(minimum: gridItemWidthFinal), spacing: 0
-                    )
-                    ], spacing:0
-            ) {
-                ForEach(
-                    viewModel.cards,
-                ) {
-                    card in
-                    CardView(
-                        card: card
-                    ).aspectRatio(aspectRatio, contentMode: .fit).padding(4).onTapGesture {
-                        viewModel.choose(card: card)
+        AspectVGrid(
+            items: viewModel.cards,
+            aspectRatio: aspectRatio,
+            itemViewWidget: { item in
+                CardView(card: item)
+                    .padding(4)
+                    .onTapGesture {
+                        viewModel.choose(card: item)
                     }
-                    
-                }
             }
-        }
+        )
+        ///
+        /// Another way of define AspectVGrid
+//        AspectVGrid(
+//            items: viewModel.cards,
+//            aspectRatio: aspectRatio
+//        ) { item in
+//            CardView(card: item)
+//                .padding(4)
+//                .onTapGesture {
+//                    viewModel.choose(card: item)
+//                }
+//        }
+
+       
       
 //        LazyVGrid(
 //            columns: [GridItem(), GridItem(), GridItem()]

@@ -43,7 +43,7 @@ class MemoryGameViewModel: ObservableObject {
             "🎱", "⚽️", "🎾"
         ]
         
-        var cards: Array<MemorizeGame<String>.CardModel>{
+        var cards: Array<Card>{
             return model.cards
         }
         
@@ -54,7 +54,7 @@ class MemoryGameViewModel: ObservableObject {
             model.shuffle()
         }
         
-        func choose(card: MemorizeGame<String>.CardModel){
+        func choose(card: Card){
             model.choose( card)
         }
 } 

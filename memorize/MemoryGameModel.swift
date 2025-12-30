@@ -107,14 +107,10 @@ struct MemorizeGame<GenericContent> where GenericContent: Equatable {
             return "\(id): \(content) \(isFaceUp ? "up" : "down") \(isMatched ? "Yes" : "No")"
         }
         
-       
-        
-    
         var id: String
         var isFaceUp = false
         var isMatched = false
         let content: GenericContent
-        
     }
 }
 
@@ -122,6 +118,4 @@ extension Array {
     var only: Element? {
         count == 1 ? first : nil
     }
-
-    
 }

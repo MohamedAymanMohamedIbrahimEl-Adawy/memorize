@@ -25,7 +25,7 @@ class MemoryGameViewModel: ObservableObject {
         //  Another way of difineing the previous model
    private static func createMemoryGame() -> MemorizeGame<String> {
         MemorizeGame(
-              numberOfBPairsOFcards: 4
+              numberOfBPairsOFcards: 12
           ){
               index in
               if emojis.indices.contains(index) {
@@ -45,6 +45,9 @@ class MemoryGameViewModel: ObservableObject {
         
         var cards: Array<Card>{
             return model.cards
+        }
+        var score: Int{
+            model.score
         }
         
         // MARK: - Intents

@@ -6,6 +6,7 @@ import Foundation
 
 struct MemorizeGame<GenericContent> where GenericContent: Equatable {
     private(set) var cards: Array<CardModel>
+    private(set) var score: Int = 0
     
     init(numberOfBPairsOFcards: Int, cardContentFunc: (Int) -> GenericContent) {
         cards = []  //  cards = Array<CardModel>()
@@ -65,6 +66,11 @@ struct MemorizeGame<GenericContent> where GenericContent: Equatable {
                     if cards[chosenIndex].content == cards[potentialMatchIndex].content{
                        cards[chosenIndex].isMatched = true
                        cards[potentialMatchIndex].isMatched = true
+                        score += 2
+                    }else{
+                        if cards[chosenIndex].hasBeenSeen || cards[potentialMatchIndex].hasBeenSeen  {
+                            score -= 1
+                        }
                     }
                     
                 } else {
@@ -108,9 +114,16 @@ struct MemorizeGame<GenericContent> where GenericContent: Equatable {
         }
         
         var id: String
-        var isFaceUp = true
+        var isFaceUp = false {
+            didSet {
+                if oldValue && !isFaceUp {
+                    hasBeenSeen = true
+                }
+            }
+        }
         var isMatched = false
         let content: GenericContent
+        var hasBeenSeen = false
     }
 }
 

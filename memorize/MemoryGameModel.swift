@@ -66,7 +66,7 @@ struct MemorizeGame<GenericContent> where GenericContent: Equatable {
                     if cards[chosenIndex].content == cards[potentialMatchIndex].content{
                        cards[chosenIndex].isMatched = true
                        cards[potentialMatchIndex].isMatched = true
-                        score += 2
+                        score += 2 + cards[chosenIndex].bonus +   cards[potentialMatchIndex].bonus
                     }else{
                         if cards[chosenIndex].hasBeenSeen || cards[potentialMatchIndex].hasBeenSeen  {
                             score -= 1
@@ -116,14 +116,59 @@ struct MemorizeGame<GenericContent> where GenericContent: Equatable {
         var id: String
         var isFaceUp = false {
             didSet {
+                if isFaceUp {
+                    startUsingBonusTime()
+                } else{
+                    stopUsingBonusTime()
+                }
                 if oldValue && !isFaceUp {
                     hasBeenSeen = true
                 }
             }
         }
-        var isMatched = false
+        var isMatched = false {
+            didSet {
+                if (isMatched){
+                    stopUsingBonusTime()
+                }
+            }
+        }
         let content: GenericContent
         var hasBeenSeen = false
+        
+        // MARK: - Bonus Time
+        
+        var bonusPercentRemainng: Double {
+            bonusTimeLimit > 0 ? max(0, bonusTimeLimit - faceUpTime)/bonusTimeLimit : 0
+        }
+        var bonusTimeLimit: TimeInterval = 6
+        var lastFaceUpDate: Date?
+        var pastFaceUpTime: TimeInterval = 0
+        
+        var faceUpTime: TimeInterval {
+            if let lastFaceUpDate {
+                return pastFaceUpTime + Date().timeIntervalSince(lastFaceUpDate)
+            } else {
+                return pastFaceUpTime
+            }
+        }
+        
+        var bonus: Int {
+            Int(
+                bonusTimeLimit * bonusPercentRemainng
+            )
+        }
+        private mutating func stopUsingBonusTime()
+        {
+            pastFaceUpTime = faceUpTime
+            lastFaceUpDate = nil
+        }
+        
+        private mutating func startUsingBonusTime(){
+            if isFaceUp && !isMatched && bonusPercentRemainng > 0, lastFaceUpDate == nil{
+                lastFaceUpDate = Date()
+            }
+        }
     }
 }
 

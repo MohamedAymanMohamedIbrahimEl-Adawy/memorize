@@ -16,34 +16,45 @@ struct CardView : View{
         ZStack(
             alignment: Alignment.center,
             content: {
+                TimelineView(.animation) { timeline in
+                    
+                    if card.isFaceUp || !card.isMatched {
+                        Pie(
+                           endAngle: Angle.degrees(card.bonusPercentRemainng * 360),
+                        )
+                            .foregroundColor(.orange)
+                            .opacity(Constants.Pie.opacity)
+                            .overlay(
+                                cardContent
+                            )
+                            .animation(.spin(duration: 1), value:  card.isMatched)
+                            .padding(Constants.padding6)
+                             .cardify(
+                                   isFaceUp: card.isFaceUp,
+                                   cardColor: cardColor
+                             )
+                    } else {
+                        Color.clear
+                    }
+                    
+                 
+                }
                 
-                 Pie(
-                     endAngle: Angle.degrees(240),
-                 )
-                     .foregroundColor(.orange)
-                     .opacity(Constants.Pie.opacity)
-                     .overlay(
-                         Text(card.content)
-                             .font(Font.system(size: Constants.FontSize.fontMedium))
-                             .minimumScaleFactor(Constants.FontSize.fontScaleFactor)
-                             .multilineTextAlignment(TextAlignment.center)
-                             .aspectRatio(1, contentMode: .fit)
-                             .rotationEffect(.degrees(card.isMatched ? 360 : 0))
-//                             .animation(.easeInOut(duration: 2), value: card.isMatched)
-//                            .animation(.easeInOut(duration: 2).repeatForever(autoreverses: false), value: card.isMatched)
-                     )
-                     .animation(.spin(duration: 1), value:  card.isMatched)
-                     .padding(Constants.padding6)
-                      .cardify(
-                            isFaceUp: card.isFaceUp,
-                            cardColor: cardColor
-                      )
 
 
             }
 
-        ).opacity(card.isFaceUp || !card.isMatched ? 1 : 0)
-
+        )
+    }
+    var cardContent: some View {
+        Text(card.content)
+            .font(Font.system(size: Constants.FontSize.fontMedium))
+            .minimumScaleFactor(Constants.FontSize.fontScaleFactor)
+            .multilineTextAlignment(TextAlignment.center)
+            .aspectRatio(1, contentMode: .fit)
+            .rotationEffect(.degrees(card.isMatched ? 360 : 0))
+//                             .animation(.easeInOut(duration: 2), value: card.isMatched)
+//                            .animation(.easeInOut(duration: 2).repeatForever(autoreverses: false), value: card.isMatched)
     }
 
 }
